@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="description" content="Notice  This article is about version 2.0.0-rc1 of the specification. Please note that documentation and tooling support are minimum or inexistent yet. We&rsquo;re working hard to update everything to version 2.0.0 as soon as possible. Thanks for your patience.
+  To illustrate how schema reusability works on AsyncAPI, we&rsquo;re going to enhance the Hello world publisher application to make it, say, a bit less &ldquo;hello world&rdquo;:" />
+
+
+
+
+
+<meta itemprop="name" content="Reusing schemas | AsyncAPI Initiative">
+<meta itemprop="description" content="Notice  This article is about version 2.0.0-rc1 of the specification. Please note that documentation and tooling support are minimum or inexistent yet. We&rsquo;re working hard to update everything to version 2.0.0 as soon as possible. Thanks for your patience.
+  To illustrate how schema reusability works on AsyncAPI, we&rsquo;re going to enhance the Hello world publisher application to make it, say, a bit less &ldquo;hello world&rdquo;:">
+<meta itemprop="image" content="https://www.asyncapi.com/images/social/card.png">
+
+
+<meta name="twitter:card" value="summary_large_image">
+<meta name="twitter:title" content="Reusing schemas | AsyncAPI Initiative">
+<meta name="twitter:description" content="Notice  This article is about version 2.0.0-rc1 of the specification. Please note that documentation and tooling support are minimum or inexistent yet. We&rsquo;re working hard to update everything to version 2.0.0 as soon as possible. Thanks for your patience.
+  To illustrate how schema reusability works on AsyncAPI, we&rsquo;re going to enhance the Hello world publisher application to make it, say, a bit less &ldquo;hello world&rdquo;:">
+<meta name="twitter:image" content="https://www.asyncapi.com/images/social/card.png">
+
+
+<meta property="og:title" content="Reusing schemas | AsyncAPI Initiative" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.asyncapi.com/docs/getting-started/reusing-schemas/" />
+<meta property="og:image" content="https://www.asyncapi.com/images/social/card.png" />
+<meta property="og:description" content="Notice  This article is about version 2.0.0-rc1 of the specification. Please note that documentation and tooling support are minimum or inexistent yet. We&rsquo;re working hard to update everything to version 2.0.0 as soon as possible. Thanks for your patience.
+  To illustrate how schema reusability works on AsyncAPI, we&rsquo;re going to enhance the Hello world publisher application to make it, say, a bit less &ldquo;hello world&rdquo;:" />
+    <title>Reusing schemas | AsyncAPI Initiative</title>
+    
+<link rel="icon" type="image/png" href="https://www.asyncapi.com/images/favicon.png" />
+<link href="https://fonts.googleapis.com/css?family=Open&#43;Sans:400,600" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="/css/style.min.c3608eb94b7beafe1770b53573458965eb0fa30c317a114b20857abb63917b4c.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/themes/prism.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/plugins/line-numbers/prism-line-numbers.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/plugins/line-highlight/prism-line-highlight.min.css">
+<link rel="stylesheet" href="/syntax.css">
+</head>
+
+<body>
+    
+
+<nav class="navbar is-fresh is-transparent no-shadow" role="navigation" aria-label="main navigation">
+  <div class="container">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="/">
+        <img src="/images/logos/asyncapi.png" alt="AsyncAPI logo">
+      </a>
+      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbar-menu">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
+
+      <div id="navbar-menu" class="navbar-menu is-static">
+
+        <div class="navbar-end">
+          <div class="navbar-item has-dropdown is-hoverable">
+            <a class="navbar-link">
+              Learn
+            </a>
+
+            <div class="navbar-dropdown">
+              <a href="/docs/getting-started" class="navbar-item" >
+                Get started
+              </a>
+              <a href="/docs/tutorials" class="navbar-item" >
+                Tutorials
+              </a>
+              <a href="/docs/specifications/latest" class="navbar-item" >
+                Specification
+              </a>
+            </div>
+          </div>
+          <div class="navbar-item has-dropdown is-hoverable">
+            <a class="navbar-link">
+              Tooling
+            </a>
+
+            <div class="navbar-dropdown">
+              <a href="http://editor.asyncapi.org" class="navbar-item" target="_blank">
+                Online editor
+              </a>
+              <a href="/docs/tooling#codegens" class="navbar-item" >
+                Code generators
+              </a>
+              <a href="/docs/tooling#docgens" class="navbar-item" >
+                Documentation generators
+              </a>
+              <a href="/docs/tooling#validators" class="navbar-item" >
+                Validators
+              </a>
+              <a href="/docs/tooling#code-first" class="navbar-item" >
+                Code-first tools
+              </a>
+            </div>
+          </div>
+          <a href="/blog" class="navbar-item is-secondary">
+            Blog
+          </a>
+          <div class="navbar-item has-dropdown is-hoverable">
+            <a class="navbar-link">
+              Help
+            </a>
+
+            <div class="navbar-dropdown">
+              <a href="https://github.com/asyncapi/asyncapi" class="navbar-item" target="_blank">
+                Github repo
+              </a>
+              <a href="https://join.slack.com/t/asyncapi/shared_invite/enQtNDY3MzI0NjU5OTQyLWU4ZGU2MTg1MDIyZDFjMTI2YjkxYTdlMzc1NjgzYTAxZDM1YTg1NDhhMTE2NDliMjlhZjYxNzk0ZTE5ZGU1ZTg" class="navbar-item" target="_blank">
+                Slack workspace
+              </a>
+            </div>
+          </div>
+          <a href="/about" class="navbar-item is-secondary">
+            About
+          </a>
+          <a href="/docs/getting-started" class="navbar-item">
+            <span class="button signup-button rounded secondary-btn raised">
+              Get Started
+            </span>
+          </a>
+        </div>
+      </div>
+  </div>
+</nav>
+
+    
+    
+<div class="container" style="padding:0 2rem;margin-top:30px;">
+    <div class="columns">
+        <div class="column is-3">
+            <aside class="docs-menu">
+    <h3>Menu</h3>
+    <ul>
+        
+        
+        
+        <li>
+            
+                <a href="/docs/getting-started/">
+                    
+                    <span>Getting started</span>
+                </a>
+            
+        </li>
+        <ul class="sub-menu">
+            
+                
+                <li>
+                    <a href="/docs/getting-started/event-driven-architectures/">
+                        
+                        <span>Event-driven architectures</span>
+                    </a>
+                </li>
+                
+            
+                
+                <li>
+                    <a href="/docs/getting-started/coming-from-openapi/">
+                        
+                        <span>Coming from OpenAPI</span>
+                    </a>
+                </li>
+                
+            
+                
+                <li>
+                    <a href="/docs/getting-started/asyncapi-documents/">
+                        
+                        <span>AsyncAPI documents</span>
+                    </a>
+                </li>
+                
+            
+                
+                <li>
+                    <a href="/docs/getting-started/hello-world/">
+                        
+                        <span>Hello world</span>
+                    </a>
+                </li>
+                
+            
+                
+                <li>
+                    <a href="/docs/getting-started/servers/">
+                        
+                        <span>Servers</span>
+                    </a>
+                </li>
+                
+            
+                
+                <li>
+                    <a href="/docs/getting-started/publishing/">
+                        
+                        <span>Publishing</span>
+                    </a>
+                </li>
+                
+            
+                
+                <li>
+                    <a href="/docs/getting-started/reusing-messages/">
+                        
+                        <span>Reusing messages</span>
+                    </a>
+                </li>
+                
+            
+                
+                <li class="active">
+                    
+                    <span>Reusing schemas</span>
+                </li>
+                
+            
+                
+                <li>
+                    <a href="/docs/getting-started/security/">
+                        
+                        <span>Adding security</span>
+                    </a>
+                </li>
+                
+            
+        </ul>
+        
+        
+        
+        <li>
+            
+                <a href="/docs/tutorials/">
+                    
+                    <span>Tutorials</span>
+                </a>
+            
+        </li>
+        <ul class="sub-menu">
+            
+                
+                <li>
+                    <a href="/docs/tutorials/streetlights/">
+                        
+                        <span>Streetlights</span>
+                    </a>
+                </li>
+                
+            
+        </ul>
+        
+        
+        
+        <li>
+            
+                <a href="/docs/specifications/latest">
+                    
+                    <span>Specification</span>
+                </a>
+            
+        </li>
+        <ul class="sub-menu">
+            
+                
+                <li>
+                    <a href="/docs/specifications/2.0.0-rc1/">
+                        
+                        <span>2.0.0-rc1</span>
+                    </a>
+                </li>
+                
+            
+                
+                <li>
+                    <a href="/docs/specifications/1.2.0/">
+                        
+                        <span>1.2.0</span>
+                    </a>
+                </li>
+                
+            
+                
+                <li>
+                    <a href="/docs/specifications/1.1.0/">
+                        
+                        <span>1.1.0</span>
+                    </a>
+                </li>
+                
+            
+                
+                <li>
+                    <a href="/docs/specifications/1.0.0/">
+                        
+                        <span>1.0.0</span>
+                    </a>
+                </li>
+                
+            
+        </ul>
+        
+        
+    </ul>
+</aside>
+        </div>
+        <div class="column is-9 is-centered-tablet-portrait">
+        <div class="columns">
+    <div class="column">
+        <h1 class="title section-title">Reusing schemas</h1>
+    </div>
+</div>
+<div class="columns">
+    <div class="column is-11 docs-content">
+
+<div class="notice">
+    <div class="notice__header">
+        <i class="notice__header__icon fa fa-exclamation-triangle"></i>
+        
+            Notice
+        
+    </div>
+    <div class="notice__body">
+        <p>This article is about version 2.0.0-rc1 of the specification. Please note that documentation and tooling support are minimum or inexistent yet. We&rsquo;re working hard
+to update everything to version 2.0.0 as soon as possible. Thanks for your patience.</p>
+
+    </div>
+</div>
+
+<p>To illustrate how schema reusability works on AsyncAPI, we&rsquo;re going to enhance the <a href="/docs/getting-started/publishing">Hello world publisher application</a> to make it, say, a bit less &ldquo;hello world&rdquo;:</p>
+
+<pre class="language-yaml line-numbers" data-line="19-26"><code>asyncapi: &#39;2.0.0-rc1&#39;
+id: &#39;urn:hello-world-publisher&#39;
+info:
+  title: Hello world publisher application
+  version: &#39;0.1.0&#39;
+servers:
+  - url: kafka.mycompany.com
+    protocol: kafka
+    description: This is &#34;My Company&#34; Kafka instance.
+channels:
+  hello:
+    publish:
+      message:
+        $ref: &#39;#/components/messages/hello-msg&#39;
+components:
+  messages:
+    hello-msg:
+      payload:
+        type: object
+        properties:
+          name:
+            type: string
+          sentAt:
+            type: string
+            description: The date and time a message was sent.
+            format: datetime</code></pre>
+
+<p>The payload is now a JSON object instead of a raw string. This object must contain the properties &ldquo;name&rdquo; and &ldquo;sentAt&rdquo;. We&rsquo;ll use the name to know who we have to say hello to, and &ldquo;sentAt&rdquo; to register the date and time our application sent the message. An example of a valid object would be:</p>
+
+<pre class="language-json line-numbers" data-line=""><code>{
+  &#34;name&#34;: &#34;Jess&#34;,
+  &#34;sentAt&#34;: &#34;2018-11-13T20:20:39&#43;00:00&#34;
+}</code></pre>
+
+<div class="hint">
+    <div class="hint__icon-wrapper">
+        <i class="hint__icon-wrapper__icon fa fa-question-circle"></i>
+    </div>
+    <div class="hint__body">
+        <p>Are you new to JSON Schema? Check out their guide <a href="https://json-schema.org/understanding-json-schema/basics.html" target="_blank">Understanding JSON Schema</a>.</p>
+
+    </div>
+</div>
+
+<p>We updated our publisher to send a JSON object. Since the subscriber application is pointing to this definition, there&rsquo;s no need to change it on the subscriber side. Reusability at its best.</p>
+
+<p>However, it looks like the <code>sentAt</code> property is going to appear on every message. To keep it simple, we only have a message (hello-msg) but in real-world environment you&rsquo;ll have more than one and most probably across different channels too. Say, for instance, we want to add a &ldquo;goodbye&rdquo; message:</p>
+
+<pre class="language-yaml line-numbers" data-line="15-18,31-38"><code>asyncapi: &#39;2.0.0-rc1&#39;
+id: &#39;urn:hello-world-publisher&#39;
+info:
+  title: Hello world publisher application
+  version: &#39;0.1.0&#39;
+servers:
+  - url: kafka.mycompany.com
+    protocol: kafka
+    description: This is &#34;My Company&#34; Kafka instance.
+channels:
+  hello:
+    publish:
+      message:
+        $ref: &#39;#/components/messages/hello-msg&#39;
+  goodbye:
+    publish:
+      message:
+        $ref: &#39;#/components/messages/goodbye-msg&#39;
+components:
+  messages:
+    hello-msg:
+      payload:
+        type: object
+        properties:
+          name:
+            type: string
+          sentAt:
+            type: string
+            description: The date and time a message was sent.
+            format: datetime
+    goodbye-msg:
+      payload:
+        type: object
+        properties:
+          sentAt:
+            type: string
+            description: The date and time a message was sent.
+            format: datetime</code></pre>
+
+<p>As you can see, the definition is almost the same as the one for <code>hello-msg</code>. The only difference is that the <code>goodbye-msg</code> message doesn&rsquo;t have a &ldquo;name&rdquo; property. However, it the definition of <code>sentAt</code> is repeated, so let&rsquo;s reuse this schema:</p>
+
+<pre class="language-yaml line-numbers" data-line="28,34,35-39"><code>asyncapi: &#39;2.0.0-rc1&#39;
+id: &#39;urn:hello-world-publisher&#39;
+info:
+  title: Hello world publisher application
+  version: &#39;0.1.0&#39;
+servers:
+  - url: kafka.mycompany.com
+    protocol: kafka
+    description: This is &#34;My Company&#34; Kafka instance.
+channels:
+  hello:
+    publish:
+      message:
+        $ref: &#39;#/components/messages/hello-msg&#39;
+  goodbye:
+    publish:
+      message:
+        $ref: &#39;#/components/messages/goodbye-msg&#39;
+components:
+  messages:
+    hello-msg:
+      payload:
+        type: object
+        properties:
+          name:
+            type: string
+          sentAt:
+            $ref: &#39;#/components/schemas/sent-at&#39;
+    goodbye-msg:
+      payload:
+        type: object
+        properties:
+          sentAt:
+            $ref: &#39;#/components/schemas/sent-at&#39;
+  schemas:
+    sent-at:
+      type: string
+      description: The date and time a message was sent.
+      format: datetime</code></pre>
+
+<p>As we did with messages in the previous chapter, we moved the definition of the <code>sentAt</code> property to components &gt; schemas &gt; sent-at, and referenced it from the <code>hello-msg</code> and <code>goodbye-msg</code> messages.</p>
+
+<h2 id="conclusion">Conclusion<a href="#conclusion" class="hanchor" ariaLabel="Anchor"> #&#xFE0E;</a> </h2>
+
+<p>Schema reusability is possible inside the same document and across multiple ones too. Move schema definitions to the components section and then use &ldquo;$ref&rdquo; to point to them wherever you need them.</p>
+
+<p>On the next chapter, you&rsquo;ll learn how to add security to your API.</p>
+
+<div class="has-text-centered" style="margin-top: 40px;">
+    <a href="/docs/getting-started/security" class="button primary-btn cta button--next-chapter">
+        
+            Go to the next chapter
+        
+        <i class="fa fa-arrow-right"></i>
+    </a>
+</div>
+
+</div>
+</div>
+        </div>
+    </div>
+</div>
+
+<footer class="footer footer-dark">
+  <div class="container">
+    <div class="columns">
+      <div class="column">
+        <div class="footer-logo">
+          <img src="/images/logos/logo-footer.png">
+        </div>
+      </div>
+      <div class="column">
+        <div class="footer-column">
+          <div class="footer-header">
+            <h3>Follow Us</h3>
+            <nav class="level is-mobile">
+              <div class="level-left">
+                <a class="level-item" href="https://github.com/asyncapi/asyncapi" target="_blank">
+                  <span class="icon"><i class="fab fa-github"></i></span>
+                </a>
+                <a class="level-item" href="https://join.slack.com/t/asyncapi/shared_invite/enQtNDY3MzI0NjU5OTQyLWU4ZGU2MTg1MDIyZDFjMTI2YjkxYTdlMzc1NjgzYTAxZDM1YTg1NDhhMTE2NDliMjlhZjYxNzk0ZTE5ZGU1ZTg" target="_blank">
+                  <span class="icon"><i class="fab fa-slack"></i></span>
+                </a>
+                <a class="level-item" href="https://medium.com/asyncapi" target="_blank">
+                  <span class="icon"><i class="fab fa-medium"></i></span>
+                </a>
+                <a class="level-item" href="https://www.youtube.com/channel/UCIz9zGwDLbrYQcDKVXdOstQ" target="_blank">
+                  <span class="icon"><i class="fab fa-youtube"></i></span>
+                </a>
+                <a class="level-item" href="https://twitter.com/search?q=asyncapi" target="_blank">
+                  <span class="icon"><i class="fab fa-twitter"></i></span>
+                </a>
+              </div>
+            </nav>
+
+            <h6>Icons & Graphics attributions</h6>
+            <div class="attributions">
+              <a href="https://www.freepik.com/free-photos-vectors/background">Background vector created by starline -
+                www.freepik.com</a>
+              <div>Icons made by <a href="https://www.flaticon.com/authors/good-ware" title="Good Ware">Good Ware</a>, <a href="https://www.freepik.com/" title="Freepik">Freepik</a>, <a href="https://www.flaticon.com/authors/pixel-perfect" title="Pixel perfect">Pixel perfect</a>, and <a href="https://www.flaticon.com/authors/icongeek26" title="Icongeek26">Icongeek26</a> from <a href="https://www.flaticon.com/"
+                  title="Flaticon">www.flaticon.com</a> are licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0"
+                  target="_blank">CC 3.0 BY</a></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+
+    <script>
+    (function (i, s, o, g, r, a, m) {
+    i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+        (i[r].q = i[r].q || []).push(arguments)
+    }, i[r].l = 1 * new Date(); a = s.createElement(o),
+        m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+    ga('create', 'UA-109278936-1', 'https:\/\/www.asyncapi.com\/');
+    ga('send', 'pageview');
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+<script src="https://unpkg.com/feather-icons"></script>
+<script src="https://www.asyncapi.com/js/fresh.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+<script charset="UTF-8" src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/prism.js"></script>
+<script charset="UTF-8" src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/components/prism-yaml.min.js"></script>
+<script charset="UTF-8" src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/components/prism-json.min.js"></script>
+<script charset="UTF-8" src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/plugins/line-numbers/prism-line-numbers.js"></script>
+<script charset="UTF-8" src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/plugins/line-highlight/prism-line-highlight.min.js"></script>
+
+<script>
+    $('pre code').addClass('line-numbers');
+</script>
+
+
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(function (regs) {
+      if (regs && regs.length > 0) {
+        for (var registration of regs) {
+          registration.unregister();
+        }
+      }
+    });
+  }
+</script>
+</body>
+
+</html>
